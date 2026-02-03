@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f0f9ff"/>
+  
+  <!-- Ground/Platform -->
+  <rect x="0" y="250" width="400" height="50" fill="#94a3b8"/>
+  
+  <!-- Building base -->
+  <rect x="150" y="180" width="100" height="70" fill="#475569"/>
+  
+  <!-- Building floors -->
+  <rect x="150" y="160" width="100" height="20" fill="#64748b"/>
+  <rect x="150" y="140" width="100" height="20" fill="#64748b"/>
+  <rect x="150" y="120" width="100" height="20" fill="#64748b"/>
+  
+  <!-- Windows -->
+  <rect x="160" y="130" width="15" height="10" fill="#fbbf24"/>
+  <rect x="185" y="130" width="15" height="10" fill="#fbbf24"/>
+  <rect x="210" y="130" width="15" height="10" fill="#fbbf24"/>
+  <rect x="235" y="130" width="15" height="10" fill="#fbbf24"/>
+  
+  <rect x="160" y="150" width="15" height="10" fill="#fbbf24"/>
+  <rect x="185" y="150" width="15" height="10" fill="#fbbf24"/>
+  <rect x="210" y="150" width="15" height="10" fill="#fbbf24"/>
+  <rect x="235" y="150" width="15" height="10" fill="#fbbf24"/>
+  
+  <rect x="160" y="170" width="15" height="10" fill="#fbbf24"/>
+  <rect x="185" y="170" width="15" height="10" fill="#fbbf24"/>
+  <rect x="210" y="170" width="15" height="10" fill="#fbbf24"/>
+  <rect x="235" y="170" width="15" height="10" fill="#fbbf24"/>
+  
+  <!-- Antenna on top -->
+  <line x1="200" y1="120" x2="200" y2="100" stroke="#1f2937" stroke-width="3"/>
+  <circle cx="200" cy="100" r="4" fill="#1f2937"/>
+  
+  <!-- Wi-Fi signals -->
+  <path d="M 180 90 Q 200 80, 220 90" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.3"/>
+  <path d="M 185 85 Q 200 75, 215 85" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.5"/>
+  <path d="M 190 80 Q 200 70, 210 80" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Survey person with clipboard -->
+  <g transform="translate(80, 200)">
+    <!-- Body -->
+    <ellipse cx="0" cy="10" rx="8" ry="12" fill="#3b82f6"/>
+    <!-- Head -->
+    <circle cx="0" cy="-5" r="6" fill="#fbbf24"/>
+    <!-- Clipboard -->
+    <rect x="8" y="0" width="12" height="16" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <line x1="10" y1="4" x2="18" y2="4" stroke="#6b7280" stroke-width="1"/>
+    <line x1="10" y1="7" x2="18" y2="7" stroke="#6b7280" stroke-width="1"/>
+    <line x1="10" y1="10" x2="16" y2="10" stroke="#6b7280" stroke-width="1"/>
+  </g>
+  
+  <!-- Second survey person -->
+  <g transform="translate(320, 200)">
+    <!-- Body -->
+    <ellipse cx="0" cy="10" rx="8" ry="12" fill="#10b981"/>
+    <!-- Head -->
+    <circle cx="0" cy="-5" r="6" fill="#fbbf24"/>
+    <!-- Tablet -->
+    <rect x="-8" y="2" width="10" height="14" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1" rx="1"/>
+    <rect x="-6" y="4" width="6" height="8" fill="#3b82f6"/>
+  </g>
+  
+  <!-- Location pin -->
+  <g transform="translate(200, 60)">
+    <path d="M 0 -15c-5 0-9 4-9 9 0 7 9 16 9 16s9-9 9-16c0-5-4-9-9-9z" 
+          fill="#ef4444" stroke="none"/>
+    <circle cx="0" cy="-6" r="3" fill="white"/>
+  </g>
+  
+  <!-- Connection lines -->
+  <line x1="88" y1="190" x2="150" y2="180" stroke="#3b82f6" stroke-width="1" opacity="0.5" stroke-dasharray="2,2"/>
+  <line x1="312" y1="190" x2="250" y2="180" stroke="#10b981" stroke-width="1" opacity="0.5" stroke-dasharray="2,2"/>
+</svg>

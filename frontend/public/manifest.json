@@ -1,0 +1,23 @@
+{
+  "short_name": "ISP Survey",
+  "name": "Site Survey Tool - ISP Site Survey Management System",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1e40af",
+  "background_color": "#ffffff",
+  "description": "Professional ISP site survey management system for planning and tracking network deployment surveys"
+}

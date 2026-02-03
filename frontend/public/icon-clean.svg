@@ -1,0 +1,24 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="90" cy="90" r="90" fill="#3B82F6"/>
+  
+  <!-- Building icon -->
+  <rect x="45" y="56" width="90" height="79" fill="white" rx="6"/>
+  
+  <!-- Windows -->
+  <rect x="56" y="67" width="11" height="11" fill="#3B82F6"/>
+  <rect x="79" y="67" width="11" height="11" fill="#3B82F6"/>
+  <rect x="102" y="67" width="11" height="11" fill="#3B82F6"/>
+  <rect x="56" y="90" width="11" height="11" fill="#3B82F6"/>
+  <rect x="79" y="90" width="11" height="11" fill="#3B82F6"/>
+  <rect x="102" y="90" width="11" height="11" fill="#3B82F6"/>
+  <rect x="56" y="113" width="11" height="11" fill="#3B82F6"/>
+  <rect x="79" y="113" width="11" height="11" fill="#3B82F6"/>
+  <rect x="102" y="113" width="11" height="11" fill="#3B82F6"/>
+  
+  <!-- Door -->
+  <rect x="113" y="101" width="11" height="34" fill="#3B82F6"/>
+  
+  <!-- Roof -->
+  <polygon points="34,56 90,34 146,56" fill="#1E40AF"/>
+</svg>
