@@ -1,6 +1,6 @@
 [build]
   base = "frontend/"
-  command = "npm run build"
+  command = "npm ci && npx react-scripts build"
   publish = "build"
 
 [build.environment]
