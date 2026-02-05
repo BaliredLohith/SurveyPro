@@ -1,0 +1,438 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useAuth } from '../../../context/AuthContext';
+import { 
+  HelpCircle, 
+  BookOpen, 
+  MessageSquare, 
+  Bug, 
+  Mail, 
+  Phone, 
+  ExternalLink,
+  Search,
+  Briefcase,
+  Users,
+  Calendar,
+  FileText,
+  AlertCircle,
+  CheckCircle,
+  Video,
+  Download,
+  ChevronDown
+} from 'lucide-react';
+
+const ProjectManagerHelpSupport = () => {
+  const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('help');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandedFaq, setExpandedFaq] = useState(null);
+
+  const faqData = [
+    {
+      id: 1,
+      question: 'How do I create a new survey project?',
+      answer: 'To create a new survey project, navigate to your dashboard and click the "Create Survey" button. Fill in the required details including property information, survey type, and assign team members.',
+      category: 'projects'
+    },
+    {
+      id: 2,
+      question: 'Can I assign multiple engineers to a single project?',
+      answer: 'Yes, you can assign multiple survey engineers to a project. Go to the project details page and use the "Assign Engineer" feature to add team members.',
+      category: 'team'
+    },
+    {
+      id: 3,
+      question: 'How do I track project progress?',
+      answer: 'Use the dashboard overview to track all project progress. You can also view detailed analytics and reports for each individual project.',
+      category: 'tracking'
+    },
+    {
+      id: 4,
+      question: 'What should I do if a project is behind schedule?',
+      answer: 'If a project is behind schedule, you can adjust deadlines, reassign resources, or communicate with the team to identify bottlenecks. Use the "Update Deadline" feature in project settings.',
+      category: 'deadlines'
+    },
+    {
+      id: 5,
+      question: 'How do I generate project reports?',
+      answer: 'Navigate to the project details page and click on "Generate Report". You can choose from various report types including progress reports, team performance, and completion summaries.',
+      category: 'reports'
+    },
+    {
+      id: 6,
+      question: 'Can I export project data?',
+      answer: 'Yes, you can export project data in various formats (CSV, PDF, Excel). Go to the project dashboard and use the "Export" feature to download reports.',
+      category: 'exports'
+    }
+  ];
+
+  const tutorials = [
+    {
+      id: 1,
+      title: 'Getting Started with Project Management',
+      description: 'Learn the basics of creating and managing survey projects',
+      duration: '5 min',
+      type: 'video',
+      icon: Video
+    },
+    {
+      id: 2,
+      title: 'Team Management Guide',
+      description: 'How to effectively assign and manage your survey team',
+      duration: '8 min',
+      type: 'video',
+      icon: Video
+    },
+    {
+      id: 3,
+      title: 'Project Tracking Best Practices',
+      description: 'Tips and tricks for effective project monitoring',
+      duration: '6 min',
+      type: 'article',
+      icon: FileText
+    },
+    {
+      id: 4,
+      title: 'Advanced Reporting Features',
+      description: 'Create detailed reports and analytics for stakeholders',
+      duration: '10 min',
+      type: 'video',
+      icon: Video
+    }
+  ];
+
+  const filteredFaq = faqData.filter(faq => 
+    faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleContactSupport = (type) => {
+    // Handle different contact methods
+    console.log('Contact support via:', type);
+  };
+
+  return (
+    <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-bold text-gray-900">Help & Support</h1>
+            </div>
+            <button
+              onClick={() => window.history.back()}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Back to Dashboard
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="p-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Tabs */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+            <div className="border-b border-gray-200">
+              <nav className="flex -mb-px">
+                <button
+                  onClick={() => setActiveTab('help')}
+                  className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                    activeTab === 'help'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Help Center
+                </button>
+                <button
+                  onClick={() => setActiveTab('tutorials')}
+                  className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                    activeTab === 'tutorials'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Tutorials
+                </button>
+                <button
+                  onClick={() => setActiveTab('contact')}
+                  className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                    activeTab === 'contact'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Contact Support
+                </button>
+              </nav>
+            </div>
+          </div>
+
+          {/* Help Center Tab */}
+          {activeTab === 'help' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              {/* Search */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search for help..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                      <Briefcase className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Project Management</h3>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Learn how to create, manage, and track survey projects efficiently.
+                  </p>
+                  <button className="text-blue-600 text-sm font-medium hover:text-blue-800">
+                    Learn More →
+                  </button>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                      <Users className="w-5 h-5 text-green-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Team Coordination</h3>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Guide on assigning tasks and managing your survey team effectively.
+                  </p>
+                  <button className="text-blue-600 text-sm font-medium hover:text-blue-800">
+                    Learn More →
+                  </button>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                      <FileText className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">Reports & Analytics</h3>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Create comprehensive reports and analyze project performance.
+                  </p>
+                  <button className="text-blue-600 text-sm font-medium hover:text-blue-800">
+                    Learn More →
+                  </button>
+                </motion.div>
+              </div>
+
+              {/* FAQ */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">Frequently Asked Questions</h2>
+                <div className="space-y-4">
+                  {filteredFaq.map((faq) => (
+                    <div key={faq.id} className="border border-gray-200 rounded-lg">
+                      <button
+                        onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
+                        className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-gray-50"
+                      >
+                        <span className="font-medium text-gray-900">{faq.question}</span>
+                        <ChevronDown
+                          className={`w-4 h-4 text-gray-500 transform transition-transform ${
+                            expandedFaq === faq.id ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+                      {expandedFaq === faq.id && (
+                        <div className="px-4 py-3 border-t border-gray-200">
+                          <p className="text-gray-600">{faq.answer}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Tutorials Tab */}
+          {activeTab === 'tutorials' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">Video Tutorials & Guides</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {tutorials.map((tutorial) => {
+                    const Icon = tutorial.icon;
+                    return (
+                      <motion.div
+                        key={tutorial.id}
+                        whileHover={{ scale: 1.02 }}
+                        className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <Icon className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <span className="text-sm text-gray-500">{tutorial.duration}</span>
+                        </div>
+                        <h3 className="font-semibold text-gray-900 mb-2">{tutorial.title}</h3>
+                        <p className="text-sm text-gray-600 mb-4">{tutorial.description}</p>
+                        <button className="flex items-center text-blue-600 text-sm font-medium hover:text-blue-800">
+                          {tutorial.type === 'video' ? 'Watch Video' : 'Read Article'}
+                          <ExternalLink className="w-4 h-4 ml-1" />
+                        </button>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Contact Support Tab */}
+          {activeTab === 'contact' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Contact Options */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Contact Options</h2>
+                  <div className="space-y-4">
+                    <button
+                      onClick={() => handleContactSupport('email')}
+                      className="w-full flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                    >
+                      <Mail className="w-5 h-5 text-blue-600 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">Email Support</p>
+                        <p className="text-sm text-gray-600">Get help via email</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleContactSupport('phone')}
+                      className="w-full flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                    >
+                      <Phone className="w-5 h-5 text-green-600 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">Phone Support</p>
+                        <p className="text-sm text-gray-600">Call us directly</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => handleContactSupport('chat')}
+                      className="w-full flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                    >
+                      <MessageSquare className="w-5 h-5 text-purple-600 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">Live Chat</p>
+                        <p className="text-sm text-gray-600">Chat with support team</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Support Information */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Support Information</h2>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">Response Time</p>
+                        <p className="text-sm text-gray-600">Within 24 hours</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">Available Hours</p>
+                        <p className="text-sm text-gray-600">Mon-Fri, 9AM-6PM EST</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900">Support Channels</p>
+                        <p className="text-sm text-gray-600">Email, Phone, Chat</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Common Issues */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">Common Issues</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center p-4 border border-gray-200 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-orange-600 mr-3" />
+                    <div>
+                      <p className="font-medium text-gray-900">Project Creation Issues</p>
+                      <p className="text-sm text-gray-600">Troubleshoot project setup problems</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 border border-gray-200 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-orange-600 mr-3" />
+                    <div>
+                      <p className="font-medium text-gray-900">Team Assignment Problems</p>
+                      <p className="text-sm text-gray-600">Fix team member assignment issues</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 border border-gray-200 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-orange-600 mr-3" />
+                    <div>
+                      <p className="font-medium text-gray-900">Report Generation</p>
+                      <p className="text-sm text-gray-600">Help with creating reports</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 border border-gray-200 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-orange-600 mr-3" />
+                    <div>
+                      <p className="font-medium text-gray-900">Account Access</p>
+                      <p className="text-sm text-gray-600">Login and permission issues</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default ProjectManagerHelpSupport;

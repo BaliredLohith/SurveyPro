@@ -79,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = () => {
       if (authService.isAuthenticated()) {
         const user = authService.getCurrentUser();
+        console.log('Initial auth check - user found:', user);
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: { user },
@@ -92,22 +93,61 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Login function
-  const login = async (email, password) => {
+  const login = async (email, password, navigate) => {
+    console.log('=== LOGIN START ===');
+    console.log('Email:', email);
+    console.log('Password:', password.substring(0, 3) + '***');
+    
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
 
     try {
       const { userInfo } = await authService.login(email, password);
+      
+      console.log('=== LOGIN SUCCESS ===');
+      console.log('User info received:', userInfo);
+      
       dispatch({
         type: AUTH_ACTIONS.LOGIN_SUCCESS,
         payload: { user: userInfo },
       });
-      return { success: true };
-    } catch (error) {
+
+      // Role-based routing using React Router
+      const role = userInfo.role;
+      console.log('=== ROLE-BASED ROUTING ===');
+      console.log('User role:', role);
+      console.log('User info:', userInfo);
+      
+      // Route to role-specific welcome page
+      if (role === 'admin') {
+        console.log('Navigating to admin welcome page');
+        navigate('/admin/welcome');
+      } else if (role === 'project_manager') {
+        console.log('Navigating to project manager welcome page');
+        navigate('/manager/welcome');
+      } else if (role === 'survey_engineer') {
+        console.log('Navigating to survey engineer welcome page');
+        navigate('/engineer/welcome');
+      } else if (role === 'reviewer') {
+        console.log('Navigating to reviewer welcome page');
+        navigate('/reviewer/welcome');
+      } else if (role === 'viewer') {
+        console.log('Navigating to viewer welcome page');
+        navigate('/viewer/welcome');
+      } else {
+        console.log('Navigating to default welcome page');
+        navigate('/welcome');
+      }
+
+      return { success: true, userInfo };
+    } catch (err) {
+      console.error('=== LOGIN ERROR ===');
+      console.error('Login error:', err);
+      
       dispatch({
         type: AUTH_ACTIONS.LOGIN_FAILURE,
-        payload: { error: error.message },
+        payload: { error: err.message || 'Login failed' },
       });
-      return { success: false, error: error.message };
+      return { success: false, error: err.message || 'Login failed' };
     }
   };
 

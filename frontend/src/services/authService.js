@@ -9,6 +9,9 @@ export const authService = {
         password,
       });
 
+      console.log('Auth service response:', response); // Debug log
+      
+      // The backend returns the structure directly, not nested in a data object
       const { accessToken, refreshToken, userInfo } = response.data;
       
       // Store tokens
@@ -18,6 +21,7 @@ export const authService = {
 
       return { success: true, userInfo };
     } catch (error) {
+      console.error('Auth service error:', error); // Debug log
       throw new Error(error.response?.data?.message || 'Login failed');
     }
   },

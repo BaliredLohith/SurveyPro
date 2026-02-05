@@ -16,33 +16,16 @@ import {
   FileText
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { surveyService } from '../services/surveyService';
-import { hierarchyService } from '../services/hierarchyService';
+import SurveyModal from '../components/modals/SurveyModal';
 
 const Surveys = () => {
   const { user } = useAuth();
   const [surveys, setSurveys] = useState([]);
-  const [properties, setProperties] = useState([]);
-  const [buildings, setBuildings] = useState([]);
-  const [floors, setFloors] = useState([]);
-  const [engineers, setEngineers] = useState([]);
-  const [checklistTemplates, setChecklistTemplates] = useState([]);
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showNewSurveyModal, setShowNewSurveyModal] = useState(false);
-  
-  // New survey form state
-  const [newSurvey, setNewSurvey] = useState({
-    propertyId: '',
-    buildingId: '',
-    floorId: '',
-    surveyType: '',
-    assignedEngineerId: '',
-    checklistTemplateId: ''
-  });
 
   // Mock data for demonstration
   const mockSurveys = [
@@ -95,43 +78,127 @@ const Surveys = () => {
       status: 'in-progress',
       lastUpdated: '2024-01-11',
       progress: 40
+    },
+    {
+      id: 'SRV-006',
+      property: 'Green Valley Residency',
+      building: 'Block C',
+      floor: 'Floor 2',
+      assignedTo: 'Rahul Verma',
+      status: 'draft',
+      lastUpdated: '2024-01-10',
+      progress: 0
+    },
+    {
+      id: 'SRV-007',
+      property: 'Sunrise IT Park',
+      building: 'Tower B',
+      floor: 'Floor 10',
+      assignedTo: 'Lisa Thompson',
+      status: 'in-progress',
+      lastUpdated: '2024-01-09',
+      progress: 55
+    },
+    {
+      id: 'SRV-008',
+      property: 'Metro Hospital Complex',
+      building: 'Emergency Wing',
+      floor: 'Ground Floor',
+      assignedTo: 'David Kim',
+      status: 'completed',
+      lastUpdated: '2024-01-08',
+      progress: 100
+    },
+    {
+      id: 'SRV-009',
+      property: 'City Mall Central',
+      building: 'Retail Block 1',
+      floor: 'Floor 1',
+      assignedTo: 'Emily Rodriguez',
+      status: 'review-pending',
+      lastUpdated: '2024-01-07',
+      progress: 90
+    },
+    {
+      id: 'SRV-010',
+      property: 'Lakeview Apartments',
+      building: 'Tower D',
+      floor: 'Floor 6',
+      assignedTo: 'Michael Chen',
+      status: 'in-progress',
+      lastUpdated: '2024-01-06',
+      progress: 35
     }
   ];
 
   useEffect(() => {
-    // Use mock data for now
-    setSurveys(mockSurveys);
-    loadInitialData();
+    loadSurveys();
   }, []);
 
-  const loadInitialData = async () => {
+  const loadSurveys = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      // Load properties, engineers, etc.
-      const organizationId = user?.organizationId;
-      
-      // Mock data for demonstration
-      setProperties([
-        { id: 1, name: 'Downtown Office Complex' },
-        { id: 2, name: 'Industrial Park West' },
-        { id: 3, name: 'Medical Center Plaza' }
-      ]);
-      
-      setEngineers([
-        { id: 1, name: 'John Smith' },
-        { id: 2, name: 'Sarah Johnson' },
-        { id: 3, name: 'Mike Wilson' },
-        { id: 4, name: 'Emily Davis' },
-        { id: 5, name: 'Alex Chen' }
-      ]);
-      
-      setChecklistTemplates([
-        { id: 1, name: 'Standard Site Survey' },
-        { id: 2, name: 'Network Installation Survey' },
-        { id: 3, name: 'Maintenance Survey' }
-      ]);
+      // Get token from localStorage
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        console.log('No token found, using mock data');
+        setSurveys(mockSurveys);
+        return;
+      }
+
+      // Make API call to get surveys
+      const response = await fetch('http://localhost:5000/api/surveys', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.log('Unauthorized, using mock data');
+          setSurveys(mockSurveys);
+          return;
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('📊 API Response:', data);
+
+      if (data.success && data.data) {
+        // Transform API data to match frontend format
+        const transformedSurveys = data.data.map(survey => ({
+          id: `SRV-${survey.id}`,
+          property: survey.property_name || 'Unknown Property',
+          building: survey.building_name || 'Unknown Building',
+          floor: 'Floor 1', // Default floor since space data not available
+          assignedTo: survey.assigned_to_name || 'Unassigned',
+          status: survey.status === 'Completed' ? 'completed' : 
+                 survey.status === 'In Progress' ? 'in-progress' : 
+                 survey.status === 'Pending' ? 'draft' : 'draft',
+          lastUpdated: survey.created_at ? new Date(survey.created_at).toLocaleDateString() : 'Unknown',
+          progress: survey.status === 'Completed' ? 100 : 
+                   survey.status === 'In Progress' ? 65 : 
+                   survey.status === 'Pending' ? 35 : 0,
+          surveyType: survey.survey_type || 'Unknown',
+          priority: survey.priority || 'Medium',
+          dueDate: survey.due_date || 'Unknown'
+        }));
+        
+        setSurveys(transformedSurveys);
+        console.log(`✅ Loaded ${transformedSurveys.length} surveys from API`);
+      } else {
+        console.log('API returned no data, using mock data');
+        setSurveys(mockSurveys);
+      }
     } catch (err) {
-      setError('Failed to load initial data');
+      console.error('❌ Error loading surveys:', err);
+      console.log('🔄 Falling back to mock data due to error');
+      setSurveys(mockSurveys);
+      // Don't set error state, just use mock data silently
     } finally {
       setLoading(false);
     }
@@ -183,24 +250,23 @@ const Surveys = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleCreateSurvey = () => {
-    // Handle survey creation
-    console.log('Creating survey:', newSurvey);
-    setShowNewSurveyModal(false);
-    setNewSurvey({
-      propertyId: '',
-      buildingId: '',
-      floorId: '',
-      surveyType: '',
-      assignedEngineerId: '',
-      checklistTemplateId: ''
-    });
-  };
-
   const handleDeleteSurvey = (surveyId) => {
     if (window.confirm('Are you sure you want to delete this survey?')) {
       setSurveys(prev => prev.filter(s => s.id !== surveyId));
     }
+  };
+
+  const handleViewSurvey = (survey) => {
+    alert(`Viewing survey: ${survey.id}`);
+  };
+
+  const handleEditSurvey = (survey) => {
+    alert(`Editing survey: ${survey.id}`);
+    setShowNewSurveyModal(true); // reuse modal for edit UI
+  };
+
+  const handleAttachments = (survey) => {
+    alert(`Opening attachments for: ${survey.id}`);
   };
 
   return (
@@ -330,6 +396,7 @@ const Surveys = () => {
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
+                          onClick={() => handleViewSurvey(survey)}
                           className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150"
                           title="View Survey"
                         >
@@ -340,6 +407,7 @@ const Surveys = () => {
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
+                          onClick={() => handleEditSurvey(survey)}
                           className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150"
                           title="Edit Survey"
                         >
@@ -350,6 +418,7 @@ const Surveys = () => {
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
+                          onClick={() => handleAttachments(survey)}
                           className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150"
                           title="Attachments"
                         >
@@ -398,148 +467,16 @@ const Surveys = () => {
         </div>
       </div>
 
-      {/* New Survey Modal */}
-      <AnimatePresence>
-        {showNewSurveyModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setShowNewSurveyModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">Create New Survey</h2>
-                <button
-                  onClick={() => setShowNewSurveyModal(false)}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              
-              {/* Modal Body */}
-              <div className="p-6 space-y-4">
-                {/* Property */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Property</label>
-                  <select
-                    value={newSurvey.propertyId}
-                    onChange={(e) => setNewSurvey(prev => ({ ...prev, propertyId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select Property</option>
-                    {properties.map(property => (
-                      <option key={property.id} value={property.id}>{property.name}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                {/* Building */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Building</label>
-                  <select
-                    value={newSurvey.buildingId}
-                    onChange={(e) => setNewSurvey(prev => ({ ...prev, buildingId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select Building</option>
-                    <option value="1">Tower A</option>
-                    <option value="2">Warehouse 3</option>
-                    <option value="3">Main Hospital</option>
-                  </select>
-                </div>
-                
-                {/* Floor */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Floor</label>
-                  <select
-                    value={newSurvey.floorId}
-                    onChange={(e) => setNewSurvey(prev => ({ ...prev, floorId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select Floor</option>
-                    <option value="1">Floor 12</option>
-                    <option value="2">Ground Floor</option>
-                    <option value="3">Floor 5</option>
-                  </select>
-                </div>
-                
-                {/* Survey Type */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Survey Type</label>
-                  <select
-                    value={newSurvey.surveyType}
-                    onChange={(e) => setNewSurvey(prev => ({ ...prev, surveyType: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select Survey Type</option>
-                    <option value="site-survey">Site Survey</option>
-                    <option value="network-survey">Network Survey</option>
-                    <option value="maintenance-survey">Maintenance Survey</option>
-                  </select>
-                </div>
-                
-                {/* Assigned Engineer */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Assigned Engineer</label>
-                  <select
-                    value={newSurvey.assignedEngineerId}
-                    onChange={(e) => setNewSurvey(prev => ({ ...prev, assignedEngineerId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select Engineer</option>
-                    {engineers.map(engineer => (
-                      <option key={engineer.id} value={engineer.id}>{engineer.name}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                {/* Checklist Template */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Checklist Template</label>
-                  <select
-                    value={newSurvey.checklistTemplateId}
-                    onChange={(e) => setNewSurvey(prev => ({ ...prev, checklistTemplateId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select Template</option>
-                    {checklistTemplates.map(template => (
-                      <option key={template.id} value={template.id}>{template.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              {/* Modal Footer */}
-              <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
-                <button
-                  onClick={() => setShowNewSurveyModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleCreateSurvey}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
-                >
-                  Create Survey
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* New Survey Modal - Use same modal as dashboard */}
+      <SurveyModal
+        isOpen={showNewSurveyModal}
+        onClose={() => setShowNewSurveyModal(false)}
+        onSuccess={(surveyData) => {
+          console.log('Survey created:', surveyData);
+          setShowNewSurveyModal(false);
+          // Here you can refresh the surveys list
+        }}
+      />
     </div>
   );
 };

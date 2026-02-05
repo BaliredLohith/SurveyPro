@@ -10,12 +10,17 @@ import {
   Home,
   Building,
   Factory,
-  GraduationCap
+  GraduationCap,
+  X
 } from 'lucide-react';
+import { propertiesAPI } from '../services/apiService';
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [listError, setListError] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
 
   // Mock data for demonstration
   const mockProperties = [
@@ -82,9 +87,80 @@ const Properties = () => {
   ];
 
   useEffect(() => {
-    // Use mock data for now
+    // Just use dummy data directly
+    console.log('🏢 Using dummy data directly');
     setProperties(mockProperties);
+    setLoading(false);
   }, []);
+
+  const loadProperties = async () => {
+    setLoading(true);
+    setListError('');
+    try {
+      const response = await propertiesAPI.getAll();
+      console.log('🏢 Properties API Response:', response);
+      
+      // Handle admin response structure: {success: true, data: {properties: []}}
+      let properties = [];
+      if (response.success && response.data && response.data.properties) {
+        properties = response.data.properties;
+        console.log('🏢 Extracted properties from admin response:', properties);
+      } else if (Array.isArray(response.data)) {
+        properties = response.data;
+        console.log('🏢 Using direct array response:', properties);
+      } else if (Array.isArray(response)) {
+        properties = response;
+        console.log('🏢 Using direct response as array:', properties);
+      }
+      
+      console.log('🏢 Final properties to set:', properties);
+      setProperties(properties);
+    } catch (err) {
+      console.error('🏢 Error loading properties:', err);
+      console.log('🏢 Using dummy data as fallback');
+      setListError('Using demo data - API unavailable');
+      setProperties(mockProperties); // Use dummy data as fallback
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openAddModal = () => {
+    setShowAddModal(true);
+    setSubmitError(''); // Clear submit error when opening modal
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const propertyData = {
+      name: formData.get('name'),
+      address: formData.get('address'),
+      type: formData.get('property_type')
+    };
+
+    console.log('🏢 Submitting property:', propertyData);
+    setSubmitError('');
+
+    try {
+      const response = await propertiesAPI.create(propertyData);
+      console.log('🏢 Property creation response:', response);
+      
+      // Handle direct property response (not nested in data object)
+      const newProperty = response.data || response;
+      
+      // Add new property to the beginning of the list
+      setProperties(prev => [newProperty, ...prev]);
+      
+      // Clear form and close modal
+      e.target.reset();
+      setShowAddModal(false);
+      setSubmitError('');
+    } catch (err) {
+      console.error('🏢 Error creating property:', err);
+      setSubmitError('Error creating property');
+    }
+  };
 
   const getPropertyTypeBadge = (type) => {
     const typeConfig = {
@@ -137,7 +213,8 @@ const Properties = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
+              onClick={openAddModal}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Add Property
@@ -148,6 +225,13 @@ const Properties = () => {
 
       {/* Main Content - Property Cards Grid */}
       <div className="px-6 lg:px-10 py-8">
+        {/* Error Display */}
+        {listError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {listError}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property, index) => (
             <motion.div
@@ -219,21 +303,29 @@ const Properties = () => {
                 <div className="flex items-center gap-3">
                   <Link
                     to={`/properties/${property.id}`}
-                    className="flex-1 text-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                    className="flex-1 text-center px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
                   >
                     View Details
                   </Link>
                   
                   <Link
                     to={`/properties/${property.id}#buildings`}
-                    className="flex-1 text-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                    className="flex-1 text-center px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
                   >
                     Manage Buildings
                   </Link>
                   
                   <Link
-                    to={`/properties/${property.id}#reports`}
-                    className="flex-1 text-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                    to="/surveys"
+                    className="flex-1 text-center px-3 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium flex items-center justify-center gap-1"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Surveys
+                  </Link>
+                  
+                  <Link
+                    to="/reports"
+                    className="flex-1 text-center px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium flex items-center justify-center gap-1"
                   >
                     <BarChart3 className="w-4 h-4" />
                     Reports
@@ -253,7 +345,7 @@ const Properties = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Add First Property
@@ -261,6 +353,84 @@ const Properties = () => {
           </div>
         )}
       </div>
+
+      {/* Add Property Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Add New Property</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                  {submitError}
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Property Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter property name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                <textarea
+                  name="address"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter address"
+                  rows={3}
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                <select
+                  name="property_type"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Select property type</option>
+                  <option value="residential">Residential</option>
+                  <option value="commercial">Commercial</option>
+                  <option value="industrial">Industrial</option>
+                  <option value="campus">Campus</option>
+                </select>
+              </div>
+              
+              <div className="flex items-center justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-lg hover:from-gray-200 hover:to-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  Create Property
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

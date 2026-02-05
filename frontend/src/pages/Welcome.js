@@ -1,19 +1,58 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin, BarChart3 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { MapPin, BarChart3, ArrowRight } from 'lucide-react';
 
 const Welcome = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  console.log('=== WELCOME PAGE DEBUG ===');
+  console.log('User from context:', user);
+  console.log('User role:', user?.role);
+
+  const getDashboardRoute = () => {
+    const role = user?.role;
+    console.log('Getting dashboard route for role:', role);
+    switch (role) {
+      case 'admin':
+        return '/admin/dashboard';
+      case 'project_manager':
+        return '/manager/dashboard';
+      case 'survey_engineer':
+        return '/engineer/dashboard';
+      case 'reviewer':
+        return '/reviewer/dashboard';
+      case 'viewer':
+        return '/viewer/dashboard';
+      default:
+        return '/dashboard';
+    }
+  };
+
+  const getDashboardLabel = () => {
+    const role = user?.role;
+    console.log('Getting dashboard label for role:', role);
+    switch (role) {
+      case 'admin':
+        return 'Go to Admin Dashboard';
+      case 'project_manager':
+        return 'Go to Manager Dashboard';
+      case 'survey_engineer':
+        return 'Go to Engineer Dashboard';
+      case 'reviewer':
+        return 'Go to Reviewer Dashboard';
+      case 'viewer':
+        return 'Go to Viewer Dashboard';
+      default:
+        return 'Go to Dashboard';
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Hero Section Content */}
       <div className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Welcome Message
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">Welcome back!</h2>
-            <p className="text-lg text-gray-600">Ready to streamline your ISP site surveys?</p>
-          </div> */}
-
           {/* Main Content */}
           <div className="text-center">
             {/* Main Heading */}
@@ -30,15 +69,13 @@ const Welcome = () => {
 
             {/* Primary CTA Button */}
             <div className="mb-12">
-              <Link 
-                to="/dashboard" 
+              <button
+                onClick={() => navigate(getDashboardRoute())}
                 className="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition-all duration-200 inline-flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                <span>Go to Dashboard</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
+                <span>{getDashboardLabel()}</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
             </div>
           </div>
 

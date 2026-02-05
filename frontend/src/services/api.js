@@ -15,6 +15,11 @@ const api = axios.create({
 // Request interceptor to add JWT token
 api.interceptors.request.use(
   (config) => {
+    // Don't add token for login requests
+    if (config.url?.includes('/auth/login')) {
+      return config;
+    }
+    
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -82,6 +87,73 @@ const apiWithRetry = {
   
   patch: (url, data, config, maxRetries = 1) => 
     retryRequest(() => api.patch(url, data, config), maxRetries),
+};
+
+// Enhanced API methods with retry mechanism
+export const usersAPI = {
+  // Get all users
+  getUsers: (filters = {}) => {
+    const params = new URLSearchParams(filters);
+    console.log('🔍 API Call: GET /users?' + params.toString());
+    return apiWithRetry.get(`/users?${params}`);
+  },
+
+  // Create new user
+  createUser: (userData) => {
+    return apiWithRetry.post('/users', userData);
+  },
+
+  // Update user
+  updateUser: (id, userData) => {
+    return apiWithRetry.put(`/users/${id}`, userData);
+  },
+
+  // Delete user
+  deleteUser: (id) => {
+    return apiWithRetry.delete(`/users/${id}`);
+  },
+
+  // Update user status
+  updateUserStatus: (id, status) => {
+    return apiWithRetry.patch(`/users/${id}/status`, { status });
+  },
+
+  // Reset user password
+  resetUserPassword: (id) => {
+    return apiWithRetry.post(`/users/${id}/reset-password`);
+  },
+
+  // Delete user
+  deleteUser: (id) => {
+    return apiWithRetry.delete(`/users/${id}`);
+  },
+
+  // Get user by ID
+  getUserById: (id) => {
+    return apiWithRetry.get(`/users/${id}`);
+  },
+};
+
+// Auth API
+export const authAPI = {
+  login: (credentials) => {
+    return apiWithRetry.post('/auth/login', credentials);
+  },
+
+  getProfile: () => {
+    return apiWithRetry.get('/auth/profile');
+  },
+
+  logout: () => {
+    return apiWithRetry.post('/auth/logout');
+  },
+};
+
+// Password API
+export const passwordAPI = {
+  changePassword: (passwordData) => {
+    return apiWithRetry.post('/password/change-password', passwordData);
+  },
 };
 
 export default apiWithRetry;

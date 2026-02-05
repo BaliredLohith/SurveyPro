@@ -216,8 +216,8 @@ export const isDevelopmentMode = () => {
 
 // Demo mode configuration
 export const DEMO_CONFIG = {
-  enabled: isDevelopmentMode(),
-  autoFillLogin: true,
-  showDemoButtons: true,
+  enabled: false, // Disabled by default
+  autoFillLogin: false,
+  showDemoButtons: false,
   quickCreateData: true,
 };

@@ -1,5 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useDemoMode } from '../../hooks/useDemoMode';
+import SurveyModal from '../modals/SurveyModal';
 import { 
   Building2, 
   Users, 
@@ -14,10 +17,73 @@ import {
   BarChart3,
   Home,
   AlertTriangle,
-  Info
+  Info,
+  LogOut,
+  ChevronDown,
+  User,
+  Settings
 } from 'lucide-react';
 
 const EnhancedSurveyStats = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const { getFallbackData, isDemoMode } = useDemoMode();
+  
+  // Get demo data for dashboard
+  const dashboardStats = getFallbackData('dashboardStats') || {
+    totalOrganizations: 0,
+    totalProperties: 0,
+    totalSurveys: 0,
+    completedSurveys: 0,
+    pendingReviewSurveys: 0,
+    inProgressSurveys: 0
+  };
+
+  const handleLogout = () => {
+    // Use existing logout function from auth context
+    logout();
+  };
+
+  // Handle Quick Action buttons
+  const handleNewSurvey = () => {
+    setIsSurveyModalOpen(true);
+  };
+
+  const handleSurveyCreated = (surveyData) => {
+    // Show success message or navigate to survey details
+    console.log('Survey created:', surveyData);
+    // You can add a toast notification here
+  };
+
+  const handleAddProperty = () => {
+    navigate('/properties?action=new');
+  };
+
+  const handleAddBuilding = () => {
+    navigate('/buildings?action=new');
+  };
+
+  const handleGenerateReport = () => {
+    navigate('/reports?action=generate');
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
       {/* Top Navigation */}
@@ -31,11 +97,58 @@ const EnhancedSurveyStats = () => {
               <h1 className="text-xl font-semibold text-gray-900">SurveyPro</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">A</span>
-                </div>
-                <span className="text-sm font-medium text-gray-700">Admin</span>
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center space-x-2 hover:bg-gray-50 rounded-lg px-3 py-2 transition-colors duration-200"
+                >
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">
+                      {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user?.name || user?.email || 'Admin'}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900">
+                        {user?.name || 'Admin User'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {user?.email || 'admin@example.com'}
+                      </p>
+                    </div>
+                    <Link
+                      to="/profile"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Profile</span>
+                    </Link>
+                    <Link
+                      to="/settings"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Settings</span>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -109,19 +222,31 @@ const EnhancedSurveyStats = () => {
             {/* Quick Actions Bar */}
             <div className="mb-6">
               <div className="flex flex-wrap gap-3">
-                <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md">
+                <button 
+                  onClick={handleNewSurvey}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
                   <Plus className="w-4 h-4" />
                   <span className="text-sm font-medium">New Survey</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-sm hover:shadow-md">
+                <button 
+                  onClick={handleAddProperty}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
                   <Building2 className="w-4 h-4" />
                   <span className="text-sm font-medium">Add Property</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md">
+                <button 
+                  onClick={handleAddBuilding}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
                   <Home className="w-4 h-4" />
                   <span className="text-sm font-medium">Add Building</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-sm hover:shadow-md">
+                <button 
+                  onClick={handleGenerateReport}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
                   <BarChart3 className="w-4 h-4" />
                   <span className="text-sm font-medium">Generate Report</span>
                 </button>
@@ -137,7 +262,9 @@ const EnhancedSurveyStats = () => {
                   </div>
                   <span className="text-sm text-green-600 font-medium">+12%</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">24</h3>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {dashboardStats.totalProperties || 0}
+                </h3>
                 <p className="text-gray-600 text-sm">Total Properties</p>
               </div>
 
@@ -148,8 +275,10 @@ const EnhancedSurveyStats = () => {
                   </div>
                   <span className="text-sm text-green-600 font-medium">+8%</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">142</h3>
-                <p className="text-gray-600 text-sm">Completed Surveys</p>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {dashboardStats.totalSurveys || 0}
+                </h3>
+                <p className="text-gray-600 text-sm">Total Surveys</p>
               </div>
 
               <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow border-2 border-sky-200 hover:border-sky-400 hover:shadow-sky-200/50">
@@ -159,7 +288,9 @@ const EnhancedSurveyStats = () => {
                   </div>
                   <span className="text-sm text-red-600 font-medium">-3%</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">18</h3>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {dashboardStats.inProgressSurveys || 0}
+                </h3>
                 <p className="text-gray-600 text-sm">Pending Surveys</p>
               </div>
 
@@ -170,7 +301,9 @@ const EnhancedSurveyStats = () => {
                   </div>
                   <span className="text-sm text-gray-600 font-medium">0%</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">3</h3>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {dashboardStats.pendingReviewSurveys || 0}
+                </h3>
                 <p className="text-gray-600 text-sm">Issues Found</p>
               </div>
             </div>
@@ -429,6 +562,13 @@ const EnhancedSurveyStats = () => {
           </div>
         </main>
       </div>
+      
+      {/* Survey Modal */}
+      <SurveyModal
+        isOpen={isSurveyModalOpen}
+        onClose={() => setIsSurveyModalOpen(false)}
+        onSuccess={handleSurveyCreated}
+      />
     </div>
   );
 };

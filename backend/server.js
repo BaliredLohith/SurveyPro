@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const createTables = require('./config/database');
+const { createTables } = require('./config/database');
 
 // Load environment variables
 dotenv.config();
@@ -34,10 +34,10 @@ app.get('/', (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/properties', require('./routes/properties'));
 app.use('/api/buildings', require('./routes/buildings'));
-app.use('/api/floors', require('./routes/floors'));
-app.use('/api/spaces', require('./routes/spaces'));
-app.use('/api/floorplans', require('./routes/floorplans'));
+app.use('/api/reports', require('./routes/reports'));
+app.use('/api/users', require('./routes/users'));
 app.use('/api/surveys', require('./routes/surveys'));
+// app.use('/api/survey-data', require('./routes/surveyData')); // Commented out - file missing
 
 const PORT = process.env.PORT || 5000;
 

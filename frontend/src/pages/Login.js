@@ -86,8 +86,8 @@ const Login = () => {
     }
 
     try {
-      await login(formData.email, formData.password);
-      navigate('/welcome');
+      await login(formData.email, formData.password, navigate);
+      // Navigation is handled by AuthContext based on role
     } catch (err) {
       // Error is handled by the auth context
     }

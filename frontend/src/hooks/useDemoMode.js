@@ -115,9 +115,10 @@ export const useDemoMode = () => {
 
   // Auto-fill demo credentials
   const getDemoCredentials = () => {
+    // Return empty credentials to force manual login
     return {
-      email: 'admin@example.com',
-      password: 'password123',
+      email: '',
+      password: '',
     };
   };
 

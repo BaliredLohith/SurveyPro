@@ -2,22 +2,81 @@ const db = require('../config/db');
 
 // Get all surveys
 const getAllSurveys = (req, res) => {
-    const query = `
-        SELECT s.*, sp.name as space_name, sp.type as space_type, 
-               f.name as floor_name, b.name as building_name, p.name as property_name 
-        FROM surveys s 
-        LEFT JOIN spaces sp ON s.space_id = sp.id 
-        LEFT JOIN floors f ON sp.floor_id = f.id 
-        LEFT JOIN buildings b ON f.building_id = b.id 
-        LEFT JOIN properties p ON b.property_id = p.id 
-        ORDER BY s.created_at DESC
-    `;
-    db.query(query, (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Database error' });
+    try {
+        const userRole = req.user?.role;
+        const userId = req.user?.id;
+        
+        console.log('🔍 Fetching surveys for user:', { userId, userRole });
+        
+        let query;
+        let params = [];
+        
+        if (userRole === 'admin' || userRole === 'project_manager') {
+            // Admin and Project Manager can see all surveys
+            query = `
+                SELECT s.*, 
+                       b.name as building_name, p.name as property_name,
+                       u.name as assigned_to_name, u.email as assigned_to_email
+                FROM surveys s 
+                LEFT JOIN buildings b ON s.building_id = b.id 
+                LEFT JOIN properties p ON s.property_id = p.id
+                LEFT JOIN users u ON s.assigned_to = u.id
+                ORDER BY s.created_at DESC
+            `;
+        } else if (userRole === 'survey_engineer') {
+            // Survey Engineer can only see surveys assigned to them
+            query = `
+                SELECT s.*, 
+                       b.name as building_name, p.name as property_name,
+                       u.name as assigned_to_name, u.email as assigned_to_email
+                FROM surveys s 
+                LEFT JOIN buildings b ON s.building_id = b.id 
+                LEFT JOIN properties p ON s.property_id = p.id
+                LEFT JOIN users u ON s.assigned_to = u.id
+                WHERE s.assigned_to = ?
+                ORDER BY s.created_at DESC
+            `;
+            params = [userId];
+        } else {
+            // Reviewer and Viewer can see all surveys (read-only)
+            query = `
+                SELECT s.*, 
+                       b.name as building_name, p.name as property_name,
+                       u.name as assigned_to_name, u.email as assigned_to_email
+                FROM surveys s 
+                LEFT JOIN buildings b ON s.building_id = b.id 
+                LEFT JOIN properties p ON s.property_id = p.id
+                LEFT JOIN users u ON s.assigned_to = u.id
+                ORDER BY s.created_at DESC
+            `;
         }
-        res.json(results);
-    });
+        
+        db.query(query, params, (err, results) => {
+            if (err) {
+                console.error('❌ Database error in getAllSurveys:', err);
+                return res.status(500).json({ 
+                    success: false, 
+                    message: 'Database error',
+                    error: err.message 
+                });
+            }
+            
+            console.log(`✅ Successfully fetched ${results.length} surveys for ${userRole}`);
+            res.json({ 
+                success: true, 
+                data: results,
+                count: results.length
+            });
+        });
+        
+    } catch (error) {
+        console.error('❌ Unexpected error in getAllSurveys:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error',
+            error: error.message 
+        });
+    }
 };
 
 // Get survey by ID

@@ -3,6 +3,42 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Mail, Lock, Eye, EyeOff, MapPin, BarChart3, Star } from 'lucide-react';
 
+// Add CSS styles for blue glow effect
+const loginStyles = `
+  .login-card-glow {
+    border-radius: 16px;
+    box-shadow: 0 0 25px rgba(37, 99, 235, 0.35),
+                0 0 50px rgba(37, 99, 235, 0.15);
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%   { 
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.25),
+                  0 0 40px rgba(37, 99, 235, 0.10);
+    }
+    50%  { 
+      box-shadow: 0 0 35px rgba(37, 99, 235, 0.45),
+                  0 0 60px rgba(37, 99, 235, 0.20);
+    }
+    100% { 
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.25),
+                  0 0 40px rgba(37, 99, 235, 0.10);
+    }
+  }
+`;
+
+// Inject styles into document head
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.type = 'text/css';
+  styleSheet.innerText = loginStyles;
+  if (!document.head.querySelector('style[data-login-glow]')) {
+    styleSheet.setAttribute('data-login-glow', 'true');
+    document.head.appendChild(styleSheet);
+  }
+}
+
 const LoginForm = ({ 
   formData, 
   errors, 
@@ -16,12 +52,34 @@ const LoginForm = ({
   const [showPassword, setShowPassword] = useState(false);
   const [localFormData, setLocalFormData] = useState({ email: '', password: '' });
   const [localLoading, setLocalLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('select');
   const { login } = useAuth();
+
+  // Demo credentials mapping
+  const demoCredentials = {
+    admin: { email: 'admin@example.com', password: 'admin123' },
+    'project-manager': { email: 'pm1@surveypro.com', password: 'project123' },
+    'survey-engineer': { email: 'engineer1@surveypro.com', password: 'survey123' },
+    'quality-reviewer': { email: 'reviewer1@surveypro.com', password: 'review123' },
+    'report-viewer': { email: 'viewer1@surveypro.com', password: 'view123' }
+  };
 
   const handleChange = (e) => {
     const newFormData = { ...localFormData, [e.target.name]: e.target.value };
     setLocalFormData(newFormData);
     onChange(e);
+  };
+
+  const handleRoleChange = (e) => {
+    const role = e.target.value;
+    setSelectedRole(role);
+    
+    if (role !== 'select' && demoCredentials[role]) {
+      const credentials = demoCredentials[role];
+      setLocalFormData(credentials);
+      onChange({ target: { name: 'email', value: credentials.email } });
+      onChange({ target: { name: 'password', value: credentials.password } });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -35,7 +93,7 @@ const LoginForm = ({
   };
 
   const handleAutoFill = () => {
-    const demoData = { email: 'admin@example.com', password: 'password123' };
+    const demoData = { email: '', password: '' };
     setLocalFormData(demoData);
     onChange({ target: { name: 'email', value: demoData.email } });
     onChange({ target: { name: 'password', value: demoData.password } });
@@ -111,7 +169,7 @@ const LoginForm = ({
 
       {/* RIGHT LOGIN SIDE */}
       <div className="w-1/2 bg-slate-50 flex items-center justify-center p-8">
-        <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
+        <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8 login-card-glow">
 
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
@@ -127,6 +185,28 @@ const LoginForm = ({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* DEMO CREDENTIALS DROPDOWN */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Login as Demo User
+              </label>
+              <select
+                value={selectedRole}
+                onChange={handleRoleChange}
+                className="w-full h-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none px-3 text-gray-700 bg-white"
+              >
+                <option value="select">Select Demo Role</option>
+                <option value="admin">Admin</option>
+                <option value="project-manager">Project Manager</option>
+                <option value="survey-engineer">Survey Engineer</option>
+                <option value="quality-reviewer">Quality Reviewer</option>
+                <option value="report-viewer">Report Viewer</option>
+              </select>
+              <p className="mt-1 text-xs text-gray-500 italic">
+                For demonstration purposes only
+              </p>
+            </div>
 
             {/* EMAIL */}
             <div>
@@ -198,21 +278,7 @@ const LoginForm = ({
             </Link>
           </div>
 
-          {/* DEMO BOX */}
-          <div className="mt-6 bg-slate-100 rounded-xl p-4 text-sm">
-            <p className="font-semibold text-gray-700 mb-1">Demo Account</p>
-            <p className="font-mono">Email: admin@example.com</p>
-            <p className="font-mono">Password: password123</p>
-            <button
-              type="button"
-              onClick={handleAutoFill}
-              className="mt-2 bg-blue-500 text-white px-3 py-1 rounded text-xs"
-            >
-              Auto Fill Demo
-            </button>
           </div>
-
-        </div>
       </div>
     </div>
   );

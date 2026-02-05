@@ -154,6 +154,205 @@ const Reports = () => {
         powerCoverage: 78,
         environmentalScore: 30
       }
+    },
+    {
+      id: 6,
+      type: 'property-readiness',
+      title: 'Medical Center Plaza - Readiness Report',
+      propertyName: 'Medical Center Plaza',
+      date: '2024-01-15',
+      status: 'ready',
+      readinessScore: 89,
+      totalBuildings: 4,
+      readyBuildings: 4,
+      issueBuildings: 0,
+      summary: 'Medical Center Plaza demonstrates excellent readiness with 89% completion. All buildings meet deployment standards.',
+      recommendations: 'APPROVED for immediate deployment. Full medical facility coverage achieved.',
+      charts: {
+        readiness: 89,
+        buildings: { ready: 4, issues: 0 },
+        surveys: { completed: 18, pending: 2 }
+      }
+    },
+    {
+      id: 7,
+      type: 'building-survey',
+      title: 'Emergency Wing - Technical Assessment',
+      propertyName: 'Medical Center Plaza',
+      buildingName: 'Emergency Wing',
+      date: '2024-01-14',
+      status: 'ready',
+      readinessScore: 91,
+      floorsSurveyed: 3,
+      totalFloors: 3,
+      powerPointsCoverage: 95,
+      environmentalChecks: 92,
+      issues: ['Minor EMI interference in ICU'],
+      summary: 'Emergency Wing shows excellent technical readiness with robust power and environmental systems.',
+      recommendations: 'Deploy with EMI shielding for critical medical equipment.',
+      charts: {
+        floorProgress: 100,
+        powerCoverage: 95,
+        environmentalScore: 92
+      }
+    },
+    {
+      id: 8,
+      type: 'engineer-performance',
+      title: 'Michael Chen - Performance Review',
+      propertyName: 'All Properties',
+      engineerName: 'Michael Chen',
+      date: '2024-01-13',
+      status: 'excellent',
+      surveysCompleted: 28,
+      avgCompletionTime: 3.8,
+      qualityScore: 91,
+      summary: 'Michael maintains high performance standards with excellent efficiency and quality metrics.',
+      recommendations: 'Excellent candidate for senior engineer role. Continue current performance trajectory.',
+      charts: {
+        surveysTrend: [24, 26, 27, 28, 27, 28],
+        qualityScore: 91,
+        completionTime: 3.8
+      }
+    },
+    {
+      id: 9,
+      type: 'property-readiness',
+      title: 'Shopping Mall North - Deployment Analysis',
+      propertyName: 'Shopping Mall North',
+      date: '2024-01-12',
+      status: 'attention',
+      readinessScore: 58,
+      totalBuildings: 3,
+      readyBuildings: 1,
+      issueBuildings: 2,
+      summary: 'Shopping mall faces significant challenges with 58% readiness. Retail areas require extensive infrastructure work.',
+      recommendations: 'DELAY deployment. Focus on retail wing infrastructure improvements.',
+      charts: {
+        readiness: 58,
+        buildings: { ready: 1, issues: 2 },
+        surveys: { completed: 12, pending: 15 }
+      }
+    },
+    {
+      id: 10,
+      type: 'building-survey',
+      title: 'Retail Block C - Infrastructure Report',
+      propertyName: 'Shopping Mall North',
+      buildingName: 'Retail Block C',
+      date: '2024-01-11',
+      status: 'blocked',
+      readinessScore: 35,
+      floorsSurveyed: 2,
+      totalFloors: 4,
+      powerPointsCoverage: 45,
+      environmentalChecks: 28,
+      issues: ['Insufficient power capacity', 'Structural interference', 'Permission delays'],
+      summary: 'Retail Block C has critical infrastructure limitations preventing deployment.',
+      recommendations: 'BLOCKED until power capacity upgrades and structural modifications completed.',
+      charts: {
+        floorProgress: 50,
+        powerCoverage: 45,
+        environmentalScore: 28
+      }
+    },
+    {
+      id: 11,
+      type: 'engineer-performance',
+      title: 'Sarah Johnson - Quarterly Assessment',
+      propertyName: 'All Properties',
+      engineerName: 'Sarah Johnson',
+      date: '2024-01-10',
+      status: 'good',
+      surveysCompleted: 22,
+      avgCompletionTime: 5.1,
+      qualityScore: 85,
+      summary: 'Sarah shows consistent performance with good quality scores. Room for improvement in completion time.',
+      recommendations: 'Focus on time management skills. Quality performance is commendable.',
+      charts: {
+        surveysTrend: [18, 20, 21, 22, 21, 22],
+        qualityScore: 85,
+        completionTime: 5.1
+      }
+    },
+    {
+      id: 12,
+      type: 'property-readiness',
+      title: 'University Campus - Readiness Assessment',
+      propertyName: 'University Campus',
+      date: '2024-01-09',
+      status: 'ready',
+      readinessScore: 86,
+      totalBuildings: 8,
+      readyBuildings: 7,
+      issueBuildings: 1,
+      summary: 'University campus shows strong readiness with 86% completion. Library building requires minor adjustments.',
+      recommendations: 'APPROVED for deployment. Complete library building final checks.',
+      charts: {
+        readiness: 86,
+        buildings: { ready: 7, issues: 1 },
+        surveys: { completed: 35, pending: 5 }
+      }
+    },
+    {
+      id: 13,
+      type: 'building-survey',
+      title: 'Library Building - Technical Survey',
+      propertyName: 'University Campus',
+      buildingName: 'Library Building',
+      date: '2024-01-08',
+      status: 'attention',
+      readinessScore: 72,
+      floorsSurveyed: 4,
+      totalFloors: 5,
+      powerPointsCoverage: 68,
+      environmentalChecks: 78,
+      issues: ['Network coverage gaps in basement', 'Power backup testing needed'],
+      summary: 'Library building requires attention to network coverage and power systems.',
+      recommendations: 'Complete network optimization and power backup testing before deployment.',
+      charts: {
+        floorProgress: 80,
+        powerCoverage: 68,
+        environmentalScore: 78
+      }
+    },
+    {
+      id: 14,
+      type: 'engineer-performance',
+      title: 'David Kim - Performance Evaluation',
+      propertyName: 'All Properties',
+      engineerName: 'David Kim',
+      date: '2024-01-07',
+      status: 'good',
+      surveysCompleted: 25,
+      avgCompletionTime: 4.5,
+      qualityScore: 87,
+      summary: 'David demonstrates solid performance with consistent quality metrics and reasonable completion times.',
+      recommendations: 'Good performance maintained. Consider for complex survey assignments.',
+      charts: {
+        surveysTrend: [20, 22, 24, 25, 24, 25],
+        qualityScore: 87,
+        completionTime: 4.5
+      }
+    },
+    {
+      id: 15,
+      type: 'property-readiness',
+      title: 'Industrial Zone East - Feasibility Report',
+      propertyName: 'Industrial Zone East',
+      date: '2024-01-06',
+      status: 'blocked',
+      readinessScore: 42,
+      totalBuildings: 5,
+      readyBuildings: 1,
+      issueBuildings: 4,
+      summary: 'Industrial zone faces significant challenges with heavy equipment interference and power limitations.',
+      recommendations: 'NOT FEASIBLE for current deployment. Requires major infrastructure investment.',
+      charts: {
+        readiness: 42,
+        buildings: { ready: 1, issues: 4 },
+        surveys: { completed: 8, pending: 22 }
+      }
     }
   ];
 
@@ -261,8 +460,46 @@ const Reports = () => {
     setSelectedReport(null);
   };
 
-  const exportReport = (format) => {
-    alert(`Exporting report as ${format.toUpperCase()}`);
+  const exportReport = async (format) => {
+    if (format === 'pdf') {
+      try {
+        // Call the backend API to generate PDF
+        const response = await fetch('http://localhost:5000/api/reports/generate', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          // Create a blob from the PDF stream
+          const blob = await response.blob();
+          
+          // Create a temporary URL for the blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Create a temporary link element and trigger download
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'ISP_Network_Site_Survey_Report.pdf';
+          document.body.appendChild(link);
+          link.click();
+          
+          // Clean up
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          
+          console.log('✅ PDF downloaded successfully');
+        } else {
+          throw new Error('Failed to generate PDF');
+        }
+      } catch (error) {
+        console.error('❌ Error downloading PDF:', error);
+        alert('Failed to download PDF. Please try again.');
+      }
+    } else {
+      alert(`Exporting report as ${format.toUpperCase()}`);
+    }
   };
 
   const shareReport = () => {
@@ -470,6 +707,7 @@ const Reports = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => exportReport('pdf')}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />

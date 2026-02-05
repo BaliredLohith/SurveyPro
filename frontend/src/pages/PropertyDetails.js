@@ -248,14 +248,18 @@ const PropertyDetails = () => {
             </div>
             <div className="flex items-center space-x-3">
               {getPropertyTypeBadge(property.type)}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
+              <Link
+                to="/properties"
               >
-                <Settings className="w-4 h-4" />
-                Edit Property
-              </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  Edit Property
+                </motion.button>
+              </Link>
             </div>
           </div>
         </div>
@@ -373,14 +377,18 @@ const PropertyDetails = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Buildings ({buildings.length})</h2>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
+              <Link
+                to="/buildings"
               >
-                <Plus className="w-4 h-4" />
-                Add Building
-              </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Building
+                </motion.button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -476,14 +484,17 @@ const PropertyDetails = () => {
                     <div className="grid grid-cols-2 gap-2">
                       <Link
                         to="/surveys"
-                        className="text-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                        className="text-center px-3 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
                       >
                         Surveys
                       </Link>
-                      <button className="text-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium flex items-center justify-center gap-1">
+                      <Link
+                        to="/reports"
+                        className="text-center px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium flex items-center justify-center gap-1"
+                      >
                         <BarChart3 className="w-4 h-4" />
                         Reports
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </motion.div>
@@ -510,14 +521,13 @@ const PropertyDetails = () => {
           <div className="text-center py-12">
             <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Reports & Analytics</h3>
-            <p className="text-gray-500 mb-6">Generate detailed reports for this property</p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            <p className="text-gray-500 mb-6">View detailed reports for this property</p>
+            <Link
+              to="/reports"
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
             >
-              Generate Report
-            </motion.button>
+              Go to Reports Module
+            </Link>
           </div>
         )}
       </div>

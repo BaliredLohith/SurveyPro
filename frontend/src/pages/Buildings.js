@@ -7,10 +7,11 @@ import {
   FileText, 
   BarChart3,
   Plus,
-  Eye,
-  Settings,
-  Layers,
-  Zap,
+  Home,
+  Building,
+  Factory,
+  GraduationCap,
+  X,
   Thermometer,
   Activity,
   CheckCircle,
@@ -21,179 +22,495 @@ import {
   Download,
   UserCheck,
   Search,
-  Filter
+  Filter,
+  Zap,
+  Layers
 } from 'lucide-react';
+import { buildingsAPI, propertiesAPI } from '../services/apiService';
 
 const Buildings = () => {
   const [buildings, setBuildings] = useState([]);
+  const [properties, setProperties] = useState([]);
   const [selectedBuildings, setSelectedBuildings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [formData, setFormData] = useState({
+    property_id: '',
+    name: '',
+    type: 'Office',
+    floors: 1,
+    status: 'active'
+  });
 
-  // Enhanced mock data for all buildings across properties
+  // Dummy data for buildings
   const mockBuildings = [
     {
       id: 1,
-      name: 'Innovation Tower A',
-      propertyId: 1,
-      propertyName: 'Tech Park Campus',
-      type: 'office',
+      property_id: 1,
+      name: 'Main Tower A',
+      type: 'Office',
       floors: 12,
-      spaces: 48,
-      surveys: 23,
-      powerPoints: 96,
-      environmentalChecks: 18,
       status: 'active',
+      address: 'Tech Park Campus - Tower A',
+      created_at: '2026-01-15T10:00:00Z',
+      last_survey: '2026-01-20T14:30:00Z',
+      surveys_count: 8,
+      floors_count: 12,
+      spaces_count: 48,
+      lastSurveyDate: '2026-01-20',
+      nextSurveyDue: '2026-02-20',
       health: {
         networkReadiness: 92,
-        powerStability: 'Good',
+        powerStatus: 95,
+        powerStability: 'Excellent',
+        temperature: 21,
+        humidity: 45,
         environmentalSafety: 'Normal',
         equipmentAvailability: 88,
-        surveyCoverage: 75,
-        networkPointsInstalled: 64,
-        totalNetworkPoints: 80,
-        floorsCompleted: 8,
-        totalFloors: 12
-      },
-      lastSurveyDate: '2024-01-15',
-      nextSurveyDue: '2024-03-15'
+        surveyCoverage: 85,
+        lastUpdated: '2026-01-20T14:30:00Z'
+      }
     },
     {
       id: 2,
-      name: 'Tech Hub Building B',
-      propertyId: 1,
-      propertyName: 'Tech Park Campus',
-      type: 'academic',
+      property_id: 1,
+      name: 'Research Block B',
+      type: 'Research',
       floors: 8,
-      spaces: 32,
-      surveys: 18,
-      powerPoints: 64,
-      environmentalChecks: 12,
       status: 'survey-pending',
+      address: 'Tech Park Campus - Block B',
+      created_at: '2026-01-15T10:00:00Z',
+      last_survey: '2026-01-18T09:15:00Z',
+      surveys_count: 6,
+      floors_count: 8,
+      spaces_count: 32,
+      lastSurveyDate: '2026-01-18',
+      nextSurveyDue: '2026-02-18',
       health: {
-        networkReadiness: 65,
-        powerStability: 'Fair',
-        environmentalSafety: 'Warning',
-        equipmentAvailability: 45,
-        surveyCoverage: 40,
-        networkPointsInstalled: 28,
-        totalNetworkPoints: 64,
-        floorsCompleted: 3,
-        totalFloors: 8
-      },
-      lastSurveyDate: '2023-12-01',
-      nextSurveyDue: '2024-02-01'
+        networkReadiness: 88,
+        powerStatus: 92,
+        powerStability: 'Good',
+        temperature: 22,
+        humidity: 42,
+        environmentalSafety: 'Normal',
+        equipmentAvailability: 85,
+        surveyCoverage: 78,
+        lastUpdated: '2026-01-18T09:15:00Z'
+      }
     },
     {
       id: 3,
-      name: 'Research Facility C',
-      propertyId: 1,
-      propertyName: 'Tech Park Campus',
-      type: 'hospital',
-      floors: 6,
-      spaces: 24,
-      surveys: 15,
-      powerPoints: 48,
-      environmentalChecks: 9,
+      property_id: 2,
+      name: 'Corporate Plaza',
+      type: 'Office',
+      floors: 15,
       status: 'under-installation',
+      address: 'Downtown Office Complex - Plaza',
+      created_at: '2026-01-10T09:00:00Z',
+      last_survey: '2026-01-22T16:45:00Z',
+      surveys_count: 12,
+      floors_count: 15,
+      spaces_count: 60,
+      lastSurveyDate: '2026-01-22',
+      nextSurveyDue: '2026-02-22',
       health: {
-        networkReadiness: 78,
-        powerStability: 'Good',
-        environmentalSafety: 'Normal',
-        equipmentAvailability: 82,
-        surveyCoverage: 85,
-        networkPointsInstalled: 38,
-        totalNetworkPoints: 48,
-        floorsCompleted: 5,
-        totalFloors: 6
-      },
-      lastSurveyDate: '2024-01-10',
-      nextSurveyDue: '2024-04-10'
+        networkReadiness: 75,
+        powerStatus: 80,
+        powerStability: 'Fair',
+        temperature: 24,
+        humidity: 48,
+        environmentalSafety: 'Warning',
+        equipmentAvailability: 70,
+        surveyCoverage: 65,
+        lastUpdated: '2026-01-22T16:45:00Z'
+      }
     },
     {
       id: 4,
-      name: 'Data Center D',
-      propertyId: 1,
-      propertyName: 'Tech Park Campus',
-      type: 'industrial',
-      floors: 4,
-      spaces: 16,
-      surveys: 12,
-      powerPoints: 32,
-      environmentalChecks: 6,
+      property_id: 3,
+      name: 'Residential Tower 1',
+      type: 'Residential',
+      floors: 20,
       status: 'issues-found',
+      address: 'Residential Tower Heights - Tower 1',
+      created_at: '2026-01-05T08:00:00Z',
+      last_survey: '2026-01-25T11:20:00Z',
+      surveys_count: 15,
+      floors_count: 20,
+      spaces_count: 80,
+      lastSurveyDate: '2026-01-25',
+      nextSurveyDue: '2026-02-25',
       health: {
-        networkReadiness: 45,
+        networkReadiness: 65,
+        powerStatus: 70,
         powerStability: 'Poor',
-        environmentalSafety: 'Critical',
-        equipmentAvailability: 30,
-        surveyCoverage: 90,
-        networkPointsInstalled: 25,
-        totalNetworkPoints: 32,
-        floorsCompleted: 4,
-        totalFloors: 4
-      },
-      lastSurveyDate: '2024-01-05',
-      nextSurveyDue: '2024-01-20'
+        temperature: 26,
+        humidity: 55,
+        environmentalSafety: 'Warning',
+        equipmentAvailability: 60,
+        surveyCoverage: 55,
+        lastUpdated: '2026-01-25T11:20:00Z'
+      }
     },
     {
       id: 5,
-      name: 'Residential Block E',
-      propertyId: 2,
-      propertyName: 'Downtown Office Complex',
-      type: 'residential',
-      floors: 10,
-      spaces: 40,
-      surveys: 8,
-      powerPoints: 80,
-      environmentalChecks: 15,
+      property_id: 4,
+      name: 'Manufacturing Unit A',
+      type: 'Industrial',
+      floors: 3,
       status: 'active',
+      address: 'Industrial Manufacturing Hub - Unit A',
+      created_at: '2026-01-08T07:30:00Z',
+      last_survey: '2026-01-19T13:10:00Z',
+      surveys_count: 10,
+      floors_count: 3,
+      spaces_count: 12,
+      lastSurveyDate: '2026-01-19',
+      nextSurveyDue: '2026-02-19',
       health: {
-        networkReadiness: 88,
-        powerStability: 'Excellent',
+        networkReadiness: 85,
+        powerStatus: 88,
+        powerStability: 'Good',
+        temperature: 23,
+        humidity: 50,
         environmentalSafety: 'Normal',
-        equipmentAvailability: 95,
-        surveyCoverage: 60,
-        networkPointsInstalled: 48,
-        totalNetworkPoints: 80,
-        floorsCompleted: 6,
-        totalFloors: 10
-      },
-      lastSurveyDate: '2024-01-12',
-      nextSurveyDue: '2024-04-12'
+        equipmentAvailability: 82,
+        surveyCoverage: 75,
+        lastUpdated: '2026-01-19T13:10:00Z'
+      }
     },
     {
       id: 6,
-      name: 'Medical Wing F',
-      propertyId: 2,
-      propertyName: 'Downtown Office Complex',
-      type: 'hospital',
-      floors: 5,
-      spaces: 20,
-      surveys: 6,
-      powerPoints: 40,
-      environmentalChecks: 8,
+      property_id: 5,
+      name: 'Medical Wing',
+      type: 'Medical',
+      floors: 6,
       status: 'survey-pending',
+      address: 'University Medical Center - Medical Wing',
+      created_at: '2026-01-12T11:00:00Z',
+      last_survey: '2026-01-21T15:30:00Z',
+      surveys_count: 9,
+      floors_count: 6,
+      spaces_count: 24,
+      lastSurveyDate: '2026-01-21',
+      nextSurveyDue: '2026-02-21',
       health: {
-        networkReadiness: 55,
+        networkReadiness: 96,
+        powerStatus: 99,
+        powerStability: 'Excellent',
+        temperature: 20,
+        humidity: 40,
+        environmentalSafety: 'Normal',
+        equipmentAvailability: 95,
+        surveyCoverage: 92,
+        lastUpdated: '2026-01-21T15:30:00Z'
+      }
+    },
+    {
+      id: 7,
+      property_id: 2,
+      name: 'Parking Garage B',
+      type: 'Parking',
+      floors: 2,
+      status: 'Survey Pending',
+      address: 'Downtown Office Complex - Garage B',
+      created_at: '2026-01-25T10:00:00Z',
+      last_survey: '2026-01-20T14:30:00Z',
+      surveys_count: 0,
+      floors_count: 2,
+      spaces_count: 8,
+      lastSurveyDate: '2026-01-20',
+      nextSurveyDue: '2026-02-20',
+      health: {
+        networkReadiness: 75,
+        powerStatus: 85,
         powerStability: 'Fair',
+        temperature: 20,
+        humidity: 50,
+        environmentalSafety: 'Normal',
+        equipmentAvailability: 70,
+        surveyCoverage: 60,
+        lastUpdated: '2026-01-20T14:30:00Z'
+      }
+    },
+    {
+      id: 8,
+      property_id: 3,
+      name: 'Service Tower',
+      type: 'Mixed Use',
+      floors: 8,
+      status: 'Under Installation',
+      address: 'Residential Tower Heights - Service Tower',
+      created_at: '2026-01-28T15:00:00Z',
+      last_survey: '2026-01-20T14:30:00Z',
+      surveys_count: 0,
+      floors_count: 8,
+      spaces_count: 32,
+      lastSurveyDate: '2026-01-20',
+      nextSurveyDue: '2026-02-20',
+      health: {
+        networkReadiness: 60,
+        powerStatus: 70,
+        powerStability: 'Fair',
+        temperature: 24,
+        humidity: 55,
         environmentalSafety: 'Warning',
-        equipmentAvailability: 60,
+        equipmentAvailability: 65,
+        surveyCoverage: 40,
+        lastUpdated: '2026-01-20T14:30:00Z'
+      }
+    },
+    {
+      id: 9,
+      property_id: 4,
+      name: 'Storage Facility',
+      type: 'Storage',
+      floors: 1,
+      status: 'Issues Found',
+      address: 'Industrial Manufacturing Hub - Storage',
+      created_at: '2026-01-30T12:00:00Z',
+      last_survey: '2026-01-20T14:30:00Z',
+      surveys_count: 0,
+      floors_count: 1,
+      spaces_count: 4,
+      lastSurveyDate: '2026-01-20',
+      nextSurveyDue: '2026-02-20',
+      health: {
+        networkReadiness: 45,
+        powerStatus: 55,
+        powerStability: 'Poor',
+        temperature: 28,
+        humidity: 65,
+        environmentalSafety: 'Warning',
+        equipmentAvailability: 50,
         surveyCoverage: 30,
-        networkPointsInstalled: 12,
-        totalNetworkPoints: 40,
-        floorsCompleted: 2,
-        totalFloors: 5
-      },
-      lastSurveyDate: '2023-11-15',
-      nextSurveyDue: '2024-02-15'
+        lastUpdated: '2026-01-20T14:30:00Z'
+      }
+    },
+    {
+      id: 10,
+      property_id: 1,
+      name: 'Data Center Alpha',
+      type: 'Data Center',
+      floors: 4,
+      status: 'active',
+      address: 'Tech Park Campus - Data Center Alpha',
+      created_at: '2026-02-01T09:00:00Z',
+      last_survey: '2026-02-03T10:15:00Z',
+      surveys_count: 4,
+      floors_count: 4,
+      spaces_count: 16,
+      lastSurveyDate: '2026-02-03',
+      nextSurveyDue: '2026-03-03',
+      health: {
+        networkReadiness: 98,
+        powerStatus: 99,
+        powerStability: 'Excellent',
+        temperature: 18,
+        humidity: 35,
+        environmentalSafety: 'Normal',
+        equipmentAvailability: 96,
+        surveyCoverage: 88,
+        lastUpdated: '2026-02-03T10:15:00Z'
+      }
+    },
+    {
+      id: 11,
+      property_id: 2,
+      name: 'Executive Tower',
+      type: 'Office',
+      floors: 18,
+      status: 'survey-pending',
+      address: 'Downtown Office Complex - Executive Tower',
+      created_at: '2026-02-02T11:30:00Z',
+      last_survey: '2026-01-28T14:20:00Z',
+      surveys_count: 7,
+      floors_count: 18,
+      spaces_count: 72,
+      lastSurveyDate: '2026-01-28',
+      nextSurveyDue: '2026-02-28',
+      health: {
+        networkReadiness: 82,
+        powerStatus: 85,
+        powerStability: 'Good',
+        temperature: 22,
+        humidity: 46,
+        environmentalSafety: 'Normal',
+        equipmentAvailability: 78,
+        surveyCoverage: 70,
+        lastUpdated: '2026-01-28T14:20:00Z'
+      }
+    },
+    {
+      id: 12,
+      property_id: 3,
+      name: 'Residential Tower 2',
+      type: 'Residential',
+      floors: 16,
+      status: 'under-installation',
+      address: 'Residential Tower Heights - Tower 2',
+      created_at: '2026-02-03T13:45:00Z',
+      last_survey: '2026-01-30T16:10:00Z',
+      surveys_count: 2,
+      floors_count: 16,
+      spaces_count: 64,
+      lastSurveyDate: '2026-01-30',
+      nextSurveyDue: '2026-02-28',
+      health: {
+        networkReadiness: 68,
+        powerStatus: 72,
+        powerStability: 'Fair',
+        temperature: 25,
+        humidity: 52,
+        environmentalSafety: 'Warning',
+        equipmentAvailability: 65,
+        surveyCoverage: 45,
+        lastUpdated: '2026-01-30T16:10:00Z'
+      }
+    },
+    {
+      id: 13,
+      property_id: 4,
+      name: 'Manufacturing Unit B',
+      type: 'Industrial',
+      floors: 2,
+      status: 'issues-found',
+      address: 'Industrial Manufacturing Hub - Unit B',
+      created_at: '2026-02-04T08:20:00Z',
+      last_survey: '2026-01-25T11:30:00Z',
+      surveys_count: 1,
+      floors_count: 2,
+      spaces_count: 8,
+      lastSurveyDate: '2026-01-25',
+      nextSurveyDue: '2026-02-25',
+      health: {
+        networkReadiness: 52,
+        powerStatus: 58,
+        powerStability: 'Poor',
+        temperature: 27,
+        humidity: 60,
+        environmentalSafety: 'Warning',
+        equipmentAvailability: 55,
+        surveyCoverage: 35,
+        lastUpdated: '2026-01-25T11:30:00Z'
+      }
+    },
+    {
+      id: 14,
+      property_id: 5,
+      name: 'Emergency Center',
+      type: 'Medical',
+      floors: 3,
+      status: 'active',
+      address: 'University Medical Center - Emergency Center',
+      created_at: '2026-02-05T10:00:00Z',
+      last_survey: '2026-02-04T15:45:00Z',
+      surveys_count: 5,
+      floors_count: 3,
+      spaces_count: 12,
+      lastSurveyDate: '2026-02-04',
+      nextSurveyDue: '2026-03-04',
+      health: {
+        networkReadiness: 94,
+        powerStatus: 97,
+        powerStability: 'Excellent',
+        temperature: 19,
+        humidity: 38,
+        environmentalSafety: 'Normal',
+        equipmentAvailability: 92,
+        surveyCoverage: 85,
+        lastUpdated: '2026-02-04T15:45:00Z'
+      }
     }
   ];
 
+  // Dummy data for properties (matching Properties page)
+  const mockProperties = [
+    { id: 1, name: 'Tech Park Campus', type: 'commercial' },
+    { id: 2, name: 'Downtown Office Complex', type: 'commercial' },
+    { id: 3, name: 'Residential Tower Heights', type: 'residential' },
+    { id: 4, name: 'Industrial Manufacturing Hub', type: 'industrial' },
+    { id: 5, name: 'University Medical Center', type: 'commercial' },
+    { id: 6, name: 'Shopping Mall Plaza', type: 'commercial' }
+  ];
+
+  // Load dummy data directly
   useEffect(() => {
+    console.log('🏢 Using dummy data for buildings and properties');
     setBuildings(mockBuildings);
+    setProperties(mockProperties);
+    setLoading(false);
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      // Create new building object
+      const newBuilding = {
+        id: Date.now(), // Use timestamp as temporary ID
+        property_id: parseInt(formData.property_id),
+        name: formData.name,
+        type: formData.type,
+        floors: parseInt(formData.floors),
+        status: formData.status,
+        address: `Address for ${formData.name}`,
+        created_at: new Date().toISOString(),
+        last_survey: null,
+        surveys_count: 0,
+        floors_count: parseInt(formData.floors),
+        spaces_count: parseInt(formData.floors) * 4, // Estimate 4 spaces per floor
+        lastSurveyDate: new Date().toISOString().split('T')[0],
+        nextSurveyDue: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        health: {
+          networkReadiness: 85,
+          powerStatus: 90,
+          powerStability: 'Good',
+          temperature: 22,
+          humidity: 45,
+          environmentalSafety: 'Normal',
+          equipmentAvailability: 80,
+          surveyCoverage: 70,
+          lastUpdated: new Date().toISOString()
+        }
+      };
+
+      console.log('🏢 Creating building:', newBuilding);
+      
+      // Add new building to the beginning of the list
+      setBuildings(prev => [newBuilding, ...prev]);
+      
+      // Close modal and reset form
+      setShowAddModal(false);
+      setFormData({
+        property_id: '',
+        name: '',
+        type: 'Office',
+        floors: 1,
+        status: 'active'
+      });
+      
+      console.log('🏢 Building created successfully!');
+    } catch (err) {
+      console.error('🏢 Error creating building:', err);
+      setError('Error creating building');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getBuildingTypeBadge = (type) => {
     const typeConfig = {
@@ -201,9 +518,41 @@ const Buildings = () => {
         label: 'Office',
         color: 'bg-blue-100 text-blue-800 border-blue-200'
       },
+      'research': {
+        label: 'Research',
+        color: 'bg-purple-100 text-purple-800 border-purple-200'
+      },
       'residential': {
         label: 'Residential Block',
         color: 'bg-green-100 text-green-800 border-green-200'
+      },
+      'industrial': {
+        label: 'Industrial Unit',
+        color: 'bg-orange-100 text-orange-800 border-orange-200'
+      },
+      'medical': {
+        label: 'Medical Wing',
+        color: 'bg-red-100 text-red-800 border-red-200'
+      },
+      'parking': {
+        label: 'Parking',
+        color: 'bg-gray-100 text-gray-800 border-gray-200'
+      },
+      'mixed use': {
+        label: 'Mixed Use',
+        color: 'bg-indigo-100 text-indigo-800 border-indigo-200'
+      },
+      'storage': {
+        label: 'Storage',
+        color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      },
+      'educational': {
+        label: 'Educational',
+        color: 'bg-blue-100 text-blue-800 border-blue-200'
+      },
+      'data center': {
+        label: 'Data Center',
+        color: 'bg-cyan-100 text-cyan-800 border-cyan-200'
       },
       'hospital': {
         label: 'Hospital Wing',
@@ -212,14 +561,10 @@ const Buildings = () => {
       'academic': {
         label: 'Academic Block',
         color: 'bg-purple-100 text-purple-800 border-purple-200'
-      },
-      'industrial': {
-        label: 'Industrial Unit',
-        color: 'bg-orange-100 text-orange-800 border-orange-200'
       }
     };
 
-    const config = typeConfig[type] || typeConfig['office'];
+    const config = typeConfig[type.toLowerCase()] || typeConfig['office'];
 
     return (
       <div className={`inline-flex items-center px-3 py-1.5 rounded-full border ${config.color} text-sm font-medium`}>
@@ -256,7 +601,7 @@ const Buildings = () => {
       }
     };
 
-    const config = statusConfig[status] || statusConfig['active'];
+    const config = statusConfig[status?.toLowerCase()] || statusConfig['active'];
     const Icon = config.icon;
 
     return (
@@ -291,8 +636,8 @@ const Buildings = () => {
 
   const filteredBuildings = buildings.filter(building => {
     const matchesSearch = building.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         building.propertyName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || building.status === statusFilter;
+                         building.address.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || building.status.toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesStatus;
   });
 
@@ -358,6 +703,7 @@ const Buildings = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => setShowAddModal(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
@@ -564,43 +910,39 @@ const Buildings = () => {
               {/* Overview Actions */}
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <Link
-                  to={`/properties/${building.propertyId}/buildings/${building.id}`}
-                  className="text-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                  to={`/properties/${building.property_id}/buildings/${building.id}`}
+                  className="text-center px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium flex items-center justify-center gap-1"
                 >
                   <Layers className="w-4 h-4" />
                   View Floors
                 </Link>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                <Link
+                  to={`/buildings/${building.id}/survey`}
+                  className="text-center px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium flex items-center justify-center gap-1"
                 >
                   <FileText className="w-4 h-4" />
                   Start Survey
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                </Link>
+                <Link
+                  to={`/buildings/${building.id}/health`}
+                  className="text-center px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium flex items-center justify-center gap-1"
                 >
                   <Activity className="w-4 h-4" />
                   View Health
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-center px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                </Link>
+                <Link
+                  to={`/buildings/${building.id}/reports`}
+                  className="text-center px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium flex items-center justify-center gap-1"
                 >
                   <BarChart3 className="w-4 h-4" />
                   Reports
-                </motion.button>
+                </Link>
               </div>
 
               {/* Footer Info */}
               <div className="text-xs text-gray-500 border-t border-gray-100 pt-3">
-                <div className="flex justify-between">
-                  <span>Last Survey: {building.lastSurveyDate}</span>
-                  <span>Next Due: {building.nextSurveyDue}</span>
+                <div className="text-center">
+                  <span>Floors: {building.floors_count} | Spaces: {building.spaces_count}</span>
                 </div>
               </div>
             </motion.div>
@@ -627,6 +969,126 @@ const Buildings = () => {
           </div>
         )}
       </div>
+
+      {/* Add Building Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Add New Building</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                  {error}
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Property</label>
+                <select
+                  name="property_id"
+                  value={formData.property_id}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select Property</option>
+                  {properties.map(property => (
+                    <option key={property.id} value={property.id}>
+                      {property.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Building Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter building name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Building Type</label>
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="Office">Office</option>
+                  <option value="Research">Research</option>
+                  <option value="Residential">Residential</option>
+                  <option value="Industrial">Industrial</option>
+                  <option value="Medical">Medical</option>
+                  <option value="Educational">Educational</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Number of Floors</label>
+                <input
+                  type="number"
+                  name="floors"
+                  value={formData.floors}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="1"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="active">Active</option>
+                  <option value="survey-pending">Survey Pending</option>
+                  <option value="under-installation">Under Installation</option>
+                  <option value="issues-found">Issues Found</option>
+                </select>
+              </div>
+              
+              <div className="flex items-center justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Creating...' : 'Create Building'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

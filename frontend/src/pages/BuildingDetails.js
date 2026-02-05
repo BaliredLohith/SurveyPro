@@ -410,7 +410,7 @@ const BuildingDetails = () => {
                   <p className="text-gray-500 mb-6">View and manage all surveys for this building</p>
                   <Link
                     to="/surveys"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
                   >
                     Go to Surveys Module
                   </Link>
@@ -428,13 +428,12 @@ const BuildingDetails = () => {
                   <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Building Reports</h3>
                   <p className="text-gray-500 mb-6">Generate detailed reports for this building</p>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  <Link
+                    to="/reports"
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
                   >
-                    Generate Report
-                  </motion.button>
+                    Go to Reports Module
+                  </Link>
                 </motion.div>
               )}
             </AnimatePresence>

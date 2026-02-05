@@ -7,8 +7,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import DemoHelper from './components/common/DemoHelper';
-import DemoModeToggle from './components/common/DemoModeToggle';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import theme from './theme/theme';
 
@@ -16,7 +14,32 @@ import theme from './theme/theme';
 import { LoadingFallback } from './components/lazy/LazyLoadWrapper';
 const LazyLogin = React.lazy(() => import('./pages/Login'));
 const LazyWelcome = React.lazy(() => import('./pages/Welcome'));
+const LazyAdminWelcome = React.lazy(() => import('./pages/admin/welcome/AdminWelcome'));
+const LazySurveyEngineerWelcome = React.lazy(() => import('./pages/survey-engineer/welcome/EngineerWelcome'));
+const LazyProjectManagerWelcome = React.lazy(() => import('./pages/project-manager/welcome/ManagerWelcome'));
+const LazyReviewerWelcome = React.lazy(() => import('./pages/reviewer/welcome/ReviewerWelcome'));
+const LazyViewerWelcome = React.lazy(() => import('./pages/viewer/welcome/ViewerWelcome'));
 const LazyDashboard = React.lazy(() => import('./pages/Dashboard.tsx'));
+const LazySurveyEngineerDashboard = React.lazy(() => import('./pages/survey-engineer/dashboard/EngineerDashboard'));
+const LazySurveyEngineerProfile = React.lazy(() => import('./pages/survey-engineer/dashboard/EngineerProfile'));
+const LazySurveyEngineerSettings = React.lazy(() => import('./pages/survey-engineer/dashboard/EngineerSettings'));
+const LazySurveyEngineerActivity = React.lazy(() => import('./pages/survey-engineer/dashboard/EngineerActivity'));
+const LazySurveyEngineerHelpSupport = React.lazy(() => import('./pages/survey-engineer/dashboard/EngineerHelpSupport'));
+const LazyProjectManagerDashboard = React.lazy(() => import('./pages/project-manager/dashboard/ProjectManagerDashboard'));
+const LazyProjectManagerProfile = React.lazy(() => import('./pages/project-manager/dashboard/ProjectManagerProfile'));
+const LazyProjectManagerSettings = React.lazy(() => import('./pages/project-manager/dashboard/ProjectManagerSettings'));
+const LazyProjectManagerActivity = React.lazy(() => import('./pages/project-manager/dashboard/ProjectManagerActivity'));
+const LazyProjectManagerHelpSupport = React.lazy(() => import('./pages/project-manager/dashboard/ProjectManagerHelpSupport'));
+const LazyReviewerDashboard = React.lazy(() => import('./pages/reviewer/dashboard/ReviewerDashboard'));
+const LazyReviewerProfile = React.lazy(() => import('./pages/reviewer/dashboard/ReviewerProfile'));
+const LazyReviewerSettings = React.lazy(() => import('./pages/reviewer/dashboard/ReviewerSettings'));
+const LazyReviewerActivity = React.lazy(() => import('./pages/reviewer/dashboard/ReviewerActivity'));
+const LazyReviewerHelpSupport = React.lazy(() => import('./pages/reviewer/dashboard/ReviewerHelpSupport'));
+const LazyViewerDashboard = React.lazy(() => import('./pages/viewer/dashboard/ViewerDashboard'));
+const LazyViewerProfile = React.lazy(() => import('./pages/viewer/dashboard/ViewerProfile'));
+const LazyViewerSettings = React.lazy(() => import('./pages/viewer/dashboard/ViewerSettings'));
+const LazyViewerActivity = React.lazy(() => import('./pages/viewer/dashboard/ViewerActivity'));
+const LazyViewerHelpSupport = React.lazy(() => import('./pages/viewer/dashboard/ViewerHelpSupport'));
 const LazyFloorPlan = React.lazy(() => import('./pages/FloorPlan'));
 const LazyFloorPlanEditor = React.lazy(() => import('./pages/FloorPlanEditor'));
 const LazySurveys = React.lazy(() => import('./pages/Surveys'));
@@ -24,6 +47,9 @@ const LazyProperties = React.lazy(() => import('./pages/Properties'));
 const LazyPropertyDetails = React.lazy(() => import('./pages/PropertyDetails'));
 const LazyBuildingDetails = React.lazy(() => import('./pages/BuildingDetails'));
 const LazyBuildings = React.lazy(() => import('./pages/Buildings'));
+const LazyBuildingSurvey = React.lazy(() => import('./pages/BuildingSurvey'));
+const LazyBuildingReports = React.lazy(() => import('./pages/BuildingReports'));
+const LazyBuildingHealth = React.lazy(() => import('./pages/BuildingHealth'));
 const LazyUsers = React.lazy(() => import('./pages/Users'));
 const LazyReports = React.lazy(() => import('./pages/Reports'));
 const LazySettings = React.lazy(() => import('./pages/Settings'));
@@ -120,11 +146,274 @@ function App() {
                 }
               />
               <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyDashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/engineer/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazySurveyEngineerDashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/engineer/profile"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazySurveyEngineerProfile />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/engineer/settings"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazySurveyEngineerSettings />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/engineer/activity"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazySurveyEngineerActivity />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/engineer/help"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazySurveyEngineerHelpSupport />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              {/* Project Manager Routes */}
+              <Route
+                path="/manager/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyProjectManagerDashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/profile"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyProjectManagerProfile />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/settings"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyProjectManagerSettings />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/activity"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyProjectManagerActivity />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/help"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyProjectManagerHelpSupport />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              {/* Reviewer Routes */}
+              <Route
+                path="/reviewer/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyReviewerDashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reviewer/profile"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyReviewerProfile />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reviewer/settings"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyReviewerSettings />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reviewer/activity"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyReviewerActivity />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reviewer/help"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyReviewerHelpSupport />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              {/* Viewer Routes */}
+              <Route
+                path="/viewer/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyViewerDashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/viewer/profile"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyViewerProfile />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/viewer/settings"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyViewerSettings />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/viewer/activity"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyViewerActivity />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/viewer/help"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyViewerHelpSupport />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/welcome"
                 element={
                   <ProtectedRoute>
                     <Suspense fallback={<LoadingFallback />}>
                       <LazyWelcome />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/welcome"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyAdminWelcome />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/engineer/welcome"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazySurveyEngineerWelcome />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/welcome"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyProjectManagerWelcome />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reviewer/welcome"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyReviewerWelcome />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/viewer/welcome"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyViewerWelcome />
                     </Suspense>
                   </ProtectedRoute>
                 }
@@ -200,6 +489,36 @@ function App() {
                 }
               />
               <Route
+                path="/buildings/:id/survey"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyBuildingSurvey />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/buildings/:id/reports"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyBuildingReports />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/buildings/:id/health"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <LazyBuildingHealth />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/users"
                 element={
                   <ProtectedRoute>
@@ -233,15 +552,9 @@ function App() {
               {/* Default redirect */}
               <Route path="/" element={<Navigate to="/login" replace />} />
               
-              {/* Catch all route */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              {/* Catch all route - redirect to login */}
+              <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
-            
-            {/* Demo Mode Toggle */}
-            <DemoModeToggle />
-            
-            {/* Demo Helper (Development Only) */}
-            <DemoHelper />
           </Router>
           
           {/* Toast Container */}
