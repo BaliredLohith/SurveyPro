@@ -1,5 +1,6 @@
 # Dependencies
-node_modules/
+# Temporarily allow frontend/node_modules for Vercel deployment
+# node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
