@@ -45,13 +45,15 @@ A comprehensive web application for ISP (Internet Service Provider) site survey 
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### Option 1: Local Development
+
+#### 1. Clone the Repository
 ```bash
 git clone https://github.com/AmreenJahan/final.git
 cd final
 ```
 
-### 2. Database Setup
+#### 2. Database Setup
 
 #### Install MySQL and create database:
 ```sql
@@ -60,7 +62,7 @@ CREATE DATABASE info_db;
 
 #### The application will automatically create required tables on first run.
 
-### 3. Backend Setup
+#### 3. Backend Setup
 
 #### Navigate to backend directory:
 ```bash
@@ -87,14 +89,14 @@ JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRE=24h
 ```
 
-#### Start the backend server:
+#### Start backend server:
 ```bash
 npm start
 ```
 
 The backend will run on `http://localhost:5000`
 
-### 4. Frontend Setup
+#### 4. Frontend Setup
 
 #### Navigate to frontend directory (in a new terminal):
 ```bash
@@ -106,12 +108,37 @@ cd frontend
 npm install
 ```
 
-#### Start the frontend development server:
+#### Start frontend development server:
 ```bash
 npm start
 ```
 
 The frontend will run on `http://localhost:3000`
+
+### Option 2: Vercel Deployment (Frontend Only)
+
+#### 🚀 Deploy Frontend to Vercel
+
+1. **Connect to Vercel**:
+   - Go to [Vercel](https://vercel.com)
+   - Click "Add New..." → "Project"
+   - Import GitHub repository: `AmreenJahan/final`
+   - Set Root Directory: `frontend`
+
+2. **Configure Build Settings**:
+   - Framework: `Create React App`
+   - Build Command: `npm run build`
+   - Output Directory: `build`
+   - Install Command: `npm install`
+
+3. **Set Environment Variables**:
+   ```bash
+   REACT_APP_API_BASE_URL=https://your-backend-url.com/api
+   ```
+
+4. **Deploy**: Click "Deploy" and wait 2-3 minutes
+
+**📖 Detailed Guide**: See `frontend/VERCEL_DEPLOYMENT.md` for complete instructions
 
 ## 🔐 Default Login Credentials
 

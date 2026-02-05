@@ -1,4 +1,5 @@
 // Form validation utilities
+import React from 'react';
 
 // Email validation
 export const validateEmail = (email) => {
